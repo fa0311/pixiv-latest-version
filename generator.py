@@ -1,6 +1,6 @@
 import re
 
-import requests
+import cloudscraper
 
 if __name__ == "__main__":
     PIXIV_BASE_URL = "https://www.pixiv.net"
@@ -8,8 +8,7 @@ if __name__ == "__main__":
     LATEST_USER_AGENT = (
         "https://raw.githubusercontent.com/fa0311/latest-user-agent/main/header.json"
     )
-
-    session = requests.Session()
+    session = cloudscraper.create_scraper()
     headers = session.get(LATEST_USER_AGENT).json()["chrome"]
     headers.update(
         {
