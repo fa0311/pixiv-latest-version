@@ -4,10 +4,10 @@ import cloudscraper
 
 if __name__ == "__main__":
     PIXIV_BASE_URL = "https://www.pixiv.net"
-    PIXIV_CDN_URL = "https://s.pximg.net/www/js/build/"
     LATEST_USER_AGENT = (
         "https://raw.githubusercontent.com/fa0311/latest-user-agent/main/header.json"
     )
+
     session = cloudscraper.create_scraper()
     headers = session.get(LATEST_USER_AGENT).json()["chrome"]
     headers.update(
@@ -20,12 +20,17 @@ if __name__ == "__main__":
     )
 
     response = session.get(PIXIV_BASE_URL, headers=headers)
-    scripts: list[str] = re.findall(
-        rf'<script src="{PIXIV_CDN_URL}(.*?)" charset="utf8" crossorigin="anonymous"></script>',
+
+    title = re.search(r"<title>(.*?)</title>", response.text)
+    assert title is not None
+    print(title.group(1))
+
+    scripts: list[tuple[str, str]] = re.findall(
+        r'<script src="(https://.*?/www/js/build/(.*?))" charset="utf8" crossorigin="anonymous"></script>',
         response.text,
     )
-    common_path = next(filter(lambda x: x.startswith("common-path"), scripts))
-    common_response = session.get(PIXIV_CDN_URL + common_path, headers=headers)
+    common_path = next(filter(lambda x: x[1].startswith("common-path"), scripts))
+    common_response = session.get(common_path[0], headers=headers)
     version: list[str] = re.findall(
         r'version:"([a-f0-9]+)"',
         common_response.text,
