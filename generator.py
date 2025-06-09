@@ -15,7 +15,7 @@ if __name__ == "__main__":
             "host": None,
             "connection": None,
             "accept-encoding": None,
-            "accept-language": "ja-JP,ja;q=0.9",
+            "accept-language": "ja",
         }
     )
 
